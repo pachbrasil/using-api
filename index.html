@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Games</title>
+</head>
+
+<body>
+    <hr>
+    <h4> Lista de games</h4>
+    <ul id="games">
+
+    </ul>
+
+    <hr>
+    <h4>Novo Game</h4>
+    <input type="text" name="title" id="title" placeholder="Titulo" value=""><br>
+    <input type="number" name="year" id="year" placeholder="Ano" value=""><br>
+    <input type="number" name="price" id="price" placeholder="Preço" value=""><br>
+    <button type="button" onclick="createGame()">Criar</button>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+    function createGame() {
+        var tittleInput = document.getElementById('title');
+        var yearInput = document.getElementById('year');
+        var priceInput = document.getElementById('price');
+
+        var game = {
+            title: tittleInput.value,
+            year: yearInput.value,
+            price: priceInput.value
+        }
+
+        axios.post("http://localhost:45678/game", game)
+            .then(response => {
+                if (response.status == 200) {
+                    alert("Game cadastrado");
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+    }
+
+
+
+
+    axios.get("http://localhost:45678/games")
+        .then(response => {
+            var games = response.data;
+            var list = document.getElementById("games");
+
+            games.forEach(game => {
+                var item = document.createElement("li");
+
+                //gera atributos customizados 
+                //atributos customizado obrigatorios: data-
+                //<input type="" data-id="">
+                item.setAttribute("data-id", game.id);
+                item.setAttribute("data-title", game.title);
+                item.setAttribute("data-year", game.year);
+                item.setAttribute("data-price", game.price);
+
+                item.innerHTML = game.id + " - " + game.title + " - $ " + game.price;
+
+                var deleteBtn = document.createElement("button");
+                deleteBtn.innerHTML = "Deletar";
+                item.appendChild(deleteBtn);
+
+
+                list.appendChild(item);
+            });
+        })
+        .catch(error => {
+            console.log(error);
+        })
+</script>
+
+</html>
